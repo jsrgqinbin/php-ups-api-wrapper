@@ -12,6 +12,7 @@ class Shipment
     private PaymentInformation $paymentInformation;
     private Service $service;
     private Package $package;
+    private array $packages;
 
     public function __construct()
     {
@@ -96,6 +97,19 @@ class Shipment
         return $this->service;
     }
 
+    // 新增方法，用于添加一个 Package 到数组中
+    public function addPackage(Package $package)
+    {
+        $this->packages[] = $package;
+        return $this;
+    }
+
+    // 获取所有 Packages
+    public function getPackages(): array
+    {
+        return $this->packages;
+    }
+
     public function setPackage(Package $package): self
     {
         $this->package = $package;
@@ -113,7 +127,9 @@ class Shipment
             "Shipper" => $this->shipper->toArray(),
             "ShipTo" => $this->shipTo->toArray(),
             "Service" => $this->service->toArray(),
-            "Package" => $this->package->toArray()
+            "Package" => array_map(function ($package) {
+                return $package->toArray();
+            }, $this->packages)
         ];
 
         if ($this->description) {
