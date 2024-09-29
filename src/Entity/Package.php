@@ -9,12 +9,15 @@ class Package
     private Dimensions $dimensions;
     private PackageWeight $packageWeight;
     private ReferenceNumber $referenceNumber;
-    
+    private array $referenceNumbers = [];
+    private string $declaredValueCurrencyCode;
+    private string $declaredValueMonetaryValue;
+    private string $deliveryConfirmationDCISType;
+
     public function __construct()
     {
         $this->dimensions = new Dimensions();
         $this->packageWeight = new PackageWeight();
-        $this->referenceNumber = new ReferenceNumber();
     }
 
     public function setDescription(string $description): self
@@ -30,7 +33,7 @@ class Package
 
     public function setReferenceNumber(ReferenceNumber $referenceNumber): self
     {
-        $this->referenceNumber = $referenceNumber;
+        $this->referenceNumbers[] = $referenceNumber;
         return $this;
     }
 
@@ -72,6 +75,24 @@ class Package
         return $this->packageWeight;
     }
 
+    public function setDeclaredValueMonetaryValue(string $declaredValueMonetaryValue): self
+    {
+        $this->declaredValueMonetaryValue = $declaredValueMonetaryValue;
+        return $this;
+    }
+
+    public function setDeliveryConfirmationDCISType(string $deliveryConfirmationDCISType): self
+    {
+        $this->deliveryConfirmationDCISType = $deliveryConfirmationDCISType;
+        return $this;
+    }
+
+    public function setDeclaredValueCurrencyCode(string $declaredValueCurrencyCode): self
+    {
+        $this->declaredValueCurrencyCode = $declaredValueCurrencyCode;
+        return $this;
+    }
+
     public function toArray(): array
     {
         $package = [
@@ -85,13 +106,29 @@ class Package
         if ($this->dimensions->exists()) {
             $package["Dimensions"] = $this->dimensions->toArray();
         }
-        
+
         if ($this->packageWeight->exists()) {
             $package["PackageWeight"] = $this->packageWeight->toArray();
         }
-        
-        if ($this->referenceNumber->exists()) {
-            $package["ReferenceNumber"] = $this->referenceNumber->toArray();
+
+        if (!empty($this->referenceNumbers)) {
+            foreach ($this->referenceNumbers as $referenceNumber) {
+                if ($referenceNumber->exists()) {
+                    $package["ReferenceNumber"][] = $referenceNumber->toArray();
+                }
+            }
+        }
+
+        if ($this->declaredValueCurrencyCode) {
+            $package["PackageServiceOptions"]["DeclaredValue"]["CurrencyCode"] = $this->declaredValueCurrencyCode;
+        }
+
+        if ($this->declaredValueMonetaryValue) {
+            $package["PackageServiceOptions"]["DeclaredValue"]["MonetaryValue"] = $this->declaredValueMonetaryValue;
+        }
+
+        if ($this->deliveryConfirmationDCISType) {
+            $package["PackageServiceOptions"]["DeliveryConfirmation"]["DCISType"] = $this->deliveryConfirmationDCISType;
         }
 
         return $package;
