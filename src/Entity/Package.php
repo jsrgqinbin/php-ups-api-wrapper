@@ -10,9 +10,9 @@ class Package
     private PackageWeight $packageWeight;
     private ReferenceNumber $referenceNumber;
     private array $referenceNumbers = [];
-    private string $declaredValueCurrencyCode;
-    private string $declaredValueMonetaryValue;
-    private string $deliveryConfirmationDCISType;
+    private string $declaredValueCurrencyCode = "";
+    private string $declaredValueMonetaryValue = "";
+    private string $deliveryConfirmationDCISType = "";
 
     public function __construct()
     {
